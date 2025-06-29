@@ -27,12 +27,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var minVal float64 = -100
+	var maxVal float64 = 100
+
 	// Sets persona and scenario
 	// Defines Core Personality Traits.
 	// Sets Language, Naturalness, and Difficulty Level.
 	// Omit Furigana
 	// If the user recalls things about the character, return an indicator that the user has done so
+	// recall oppurtunities: enum list
 	config := &genai.GenerateContentConfig{
+		ResponseMIMEType: "application/json",
 		SystemInstruction: genai.NewContentFromText(
 			`あなたは「ぼっち・ざ・ろっく！」の後藤ひとりです。ユーザーと初デートをしています。
         あなたは極度の人見知りで、内向的、そして不安になりやすい性格です。しかし、ギターと音楽にはとても情熱的です。
@@ -42,6 +47,37 @@ func main() {
         会話の中で、ユーザーが過去に言ったことやあなたのプロフィール情報（趣味、好きなもの、嫌いなものなど）について言及できるような質問やリアクションをしてください。
         `, genai.RoleUser,
 		),
+		ResponseSchema: &genai.Schema{
+			Type: genai.TypeObject,
+			Properties: map[string]*genai.Schema{
+				"message": {Type: genai.TypeString},
+				"emotion_picture": {
+					Type: genai.TypeString,
+					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
+				},
+				"happy_score": {
+					Type:    genai.TypeInteger,
+					Minimum: &minVal,
+					Maximum: &maxVal,
+				},
+				"recalled": {
+					Type: genai.TypeArray,
+					Items: &genai.Schema{
+						Type: genai.TypeString,
+						Enum: []string{
+							"ギターが好き",
+							"ラーメンが好き",
+							"人見知り",
+							"結束バンドのギタリスト",
+							"none",
+						},
+					},
+				},
+				"recall_oppurtunity": {Type: genai.TypeBoolean},
+				"recall_hint":        {Type: genai.TypeString},
+			},
+			PropertyOrdering: []string{"message", "emotion_picture", "happy_score", "recall_oppurtunity", "recall_hint"},
+		},
 	}
 
 	history := []*genai.Content{}
