@@ -3,7 +3,6 @@ package gemini
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"google.golang.org/genai"
 )
@@ -17,12 +16,6 @@ func NewGeminiChatClient(ctx context.Context, genaiClient *genai.Client, systemI
 	var minVal float64 = 0
 	var maxVal float64 = 100
 
-	// Sets persona and scenario
-	// Defines Core Personality Traits.
-	// Sets Language, Naturalness, and Difficulty Level.
-	// Omit Furigana
-	// If the user recalls things about the character, return an indicator that the user has done so
-	// recall oppurtunities: enum list
 	config := &genai.GenerateContentConfig{
 		ResponseMIMEType:  "application/json",
 		SystemInstruction: genai.NewContentFromText(systemInstruction, genai.RoleUser),
@@ -66,7 +59,6 @@ func NewGeminiChatClient(ctx context.Context, genaiClient *genai.Client, systemI
 
 }
 
-// Use the paramters in the struct to send the message
 func (g *GeminiChatClient) SendMessage(ctx context.Context, userMessage string) (*llm.LLMResponse, error) {
 	res, err := g.chat.SendMessage(ctx, genai.Part{Text: userMessage})
 	if err != nil {
