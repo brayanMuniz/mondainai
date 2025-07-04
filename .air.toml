@@ -15,7 +15,7 @@ exclude_dir = [
 
 exclude_file = []
 
-include_extt = ["go", "html", "css"]
+include_ext = ["go", "html", "css"]
 
 [run]
 cmd = "./tmp/main"

@@ -61,7 +61,7 @@ func (s *Server) Start(addr string) error {
 }
 
 func (s *Server) setupRoutes() {
-	s.echo.GET("/", s.rootRoute)
+	s.echo.Static("/", "templates")
 
 	api := s.echo.Group("/api")
 	api.POST("/character/build", s.buildCharacter)
@@ -172,10 +172,6 @@ func (s *Server) getMessageHistory(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, messageHistory)
-}
-
-func (s *Server) rootRoute(c echo.Context) error {
-	return c.String(http.StatusOK, "こんにちわ")
 }
 
 func generateUniqeSessionId() (string, error) {
