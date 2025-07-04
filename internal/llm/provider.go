@@ -21,8 +21,9 @@ type ChatSession interface {
 }
 
 type Message struct {
-	Text string `json:"text"`
-	Role string `json:"role"` // user or model
+	UserText      *string      `json:"userText,omitempty"`
+	ModelResponse *LLMResponse `json:"modelResponse,omitempty"`
+	Role          string       `json:"role"` // user or model
 }
 
 type LLMResponse struct {

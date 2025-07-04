@@ -167,12 +167,29 @@ func (g *ChatSession) GetMessageHistory(ctx context.Context) (*llm.MessageHistor
 	}
 
 	for _, content := range geminiHistory {
+		llmMessage := llm.Message{
+			Role: content.Role,
+		}
+
 		if len(content.Parts) > 0 {
-			chatResponse := content.Parts[0].Text
-			llmMessageHistory.Messages = append(llmMessageHistory.Messages, llm.Message{
-				Text: chatResponse,
-				Role: content.Role,
-			})
+			if content.Role == "user" {
+				userResponse := content.Parts[0].Text
+				llmMessage.UserText = &userResponse
+			} else {
+				modelResponse := content.Parts[0].Text
+				var responseFromModel llm.LLMResponse
+				err := json.Unmarshal([]byte(modelResponse), &responseFromModel)
+				if err == nil {
+					llmMessage.ModelResponse = &responseFromModel
+				} else {
+					responseFromModel.Message = modelResponse
+					llmMessage.ModelResponse = &responseFromModel
+				}
+
+			}
+
+			llmMessageHistory.Messages = append(llmMessageHistory.Messages, llmMessage)
+
 		}
 	}
 
