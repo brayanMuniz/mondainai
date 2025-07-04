@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/brayanMuniz/mondainai/internal/llm"
@@ -21,6 +22,10 @@ type CharacterBuilderRequest struct {
 	Scenario       string `json:"scenario"`
 	CharacterGuide string `json:"characterGuide"`
 	JLPTLevel      string `json:"jlptLevel"`
+}
+
+type MessageRequest struct {
+	Message string `json:"message"`
 }
 
 type Server struct {
@@ -61,6 +66,8 @@ func (s *Server) setupRoutes() {
 	api := s.echo.Group("/api")
 	api.POST("/character/build", s.buildCharacter)
 
+	api.GET("/character/chat/:sessionId", s.getMessageHistory)
+	api.POST("/character/chat/:sessionId", s.sendMessage)
 }
 
 func (s *Server) buildCharacter(c echo.Context) error {
@@ -113,9 +120,58 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+	log.Println("saving sessionId", sessionId)
 	activeChatSession[sessionId] = chatSession
 
-	return c.JSON(http.StatusOK, charData)
+	return c.JSON(http.StatusOK, echo.Map{
+		"charData":  charData,
+		"sessionId": sessionId,
+	})
+}
+
+func (s *Server) sendMessage(c echo.Context) error {
+	sessionId := c.Param("sessionId")
+	if sessionId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
+	}
+
+	chatSession, ok := activeChatSession[sessionId]
+	if !ok {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
+	}
+
+	req := new(MessageRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	llmReponse, err := chatSession.SendMessage(ctx, req.Message)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, llmReponse)
+}
+
+func (s *Server) getMessageHistory(c echo.Context) error {
+	sessionId := c.Param("sessionId")
+	if sessionId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
+	}
+
+	chatSession, ok := activeChatSession[sessionId]
+	if !ok {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
+	}
+
+	ctx := c.Request().Context()
+	messageHistory, err := chatSession.GetMessageHistory(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not get your message history"))
+	}
+
+	return c.JSON(http.StatusOK, messageHistory)
 }
 
 func (s *Server) rootRoute(c echo.Context) error {

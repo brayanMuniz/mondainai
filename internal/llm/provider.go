@@ -15,6 +15,16 @@ type Character struct {
 	RecallableFacts    []string `json:"recallable_facts"`
 }
 
+type ChatSession interface {
+	GetMessageHistory(ctx context.Context) (*MessageHistory, error)
+	SendMessage(ctx context.Context, userMessage string) (*LLMResponse, error)
+}
+
+type Message struct {
+	Text string `json:"text"`
+	Role string `json:"role"` // user or model
+}
+
 type LLMResponse struct {
 	Message           string   `json:"message"`
 	EmotionPicture    string   `json:"emotion_picture"`
@@ -24,6 +34,6 @@ type LLMResponse struct {
 	RecallHint        string   `json:"recall_hint"`
 }
 
-type ChatSession interface {
-	SendMessage(ctx context.Context, userMessage string) (*LLMResponse, error)
+type MessageHistory struct {
+	Messages []Message `json:"messages"`
 }

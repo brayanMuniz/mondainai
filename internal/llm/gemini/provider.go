@@ -158,3 +158,24 @@ func (s *ChatSession) SendMessage(ctx context.Context, userMessage string) (*llm
 
 	return &formattedResponse, nil
 }
+
+func (g *ChatSession) GetMessageHistory(ctx context.Context) (*llm.MessageHistory, error) {
+	geminiHistory := g.chat.History(false)
+
+	llmMessageHistory := &llm.MessageHistory{
+		Messages: make([]llm.Message, 0),
+	}
+
+	for _, content := range geminiHistory {
+		if len(content.Parts) > 0 {
+			chatResponse := content.Parts[0].Text
+			llmMessageHistory.Messages = append(llmMessageHistory.Messages, llm.Message{
+				Text: chatResponse,
+				Role: content.Role,
+			})
+		}
+	}
+
+	return llmMessageHistory, nil
+
+}
