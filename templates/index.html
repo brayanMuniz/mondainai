@@ -4,20 +4,89 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Mondainai </title>
+	<title>Mondainai</title>
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 	<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"
 		integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm"
 		crossorigin="anonymous">
 		</script>
+	<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"></script>
+
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// listen to HTMX responses 
+			document.body.addEventListener("htmx:responseError", function (event) {
+				console.error("HTMX Response Erorr: ", event.detail)
+				console.error("Status", event.detail.xhr.status)
+				console.error("Stauts Text: ", event.detail.xhr.statusText)
+				console.error("Resonse Text", event.detail.xhr.responseText)
+			})
+		})
+	</script>
 
 
 
 </head>
 
 <body class="bg-gray-50 flex items-center justify-center min-h-screen">
-	<div>
-		<p>こんにちわ</p>
+	<div id="main-content-area">
+		<h1 class="text-3xl font-bold text-gray-800 mb-4"> こんにちわ </h1>
+		<p class="text-gray-700 mb-2">
+			This is a web app intended to help you learn 日本語 by dating virtual
+			characters
+		</p>
+		<p class="text-gray-700 mb-2">Make sure to have a Japanese keyboard!</p>
+		<p class="text-gray-700 mb-2 font-bold">
+			To start off, what would you rate your current Japanese abilities?
+		</p>
+
+		<form hx-post="/api/character/build" hx-ext='json-enc' hx-trigger="submit"
+			hx-target="#main-content-area" hx-swap="outerHTML">
+
+			<input type="hidden" name="provider" value="gemini">
+			<input type="hidden" name="name" value="ぼっちちゃん">
+			<input type="hidden" name="scenario" value="放課後の教室">
+			<input type="hidden" name="characterGuide"
+				value="とても内気で、緊張するとすぐに挙動不審になる。ギターが命で、陰でこっそり練習している。でも、実は友達が欲しいと思っている。">
+
+			<div class="space-y-4">
+				<div>
+					<input type="radio" id="N1" name="jlptLevel" value="N1" required class="mr-2">
+					<label for="N1" class="text-gray-700"> N1 - 日本人</label>
+				</div>
+
+				<div>
+					<input type="radio" id="N2" name="jlptLevel" value="N2" required class="mr-2">
+					<label for="N2" class="text-gray-700"> N2 - Pretty Good</label>
+				</div>
+
+				<div>
+					<input type="radio" id="N3" name="jlptLevel" value="N3" required class="mr-2">
+					<label for="N3" class="text-gray-700"> N3 - 日本語ちょっと</label>
+				</div>
+
+				<div>
+					<input type="radio" id="N4" name="jlptLevel" value="N4" required class="mr-2">
+					<label for="N4" class="text-gray-700"> N4 - Know Some Kanji</label>
+				</div>
+
+				<div>
+					<input type="radio" id="N5" name="jlptLevel" value="N5" required class="mr-2">
+					<label for="N5" class="text-gray-700"> N5 - I know hiragana and katakana</label>
+				</div>
+
+
+			</div>
+
+			<button type="submit"
+				class="mt-6 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+				Continue
+			</button>
+
+		</form>
+
+
 	</div>
 </body>
 

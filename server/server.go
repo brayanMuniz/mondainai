@@ -5,13 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"github.com/brayanMuniz/mondainai/internal/llm/gemini"
+	"github.com/brayanMuniz/mondainai/views"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"log"
+	"net/http"
 )
 
 var activeChatSession = make(map[string]llm.ChatSession)
@@ -123,10 +123,8 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	log.Println("saving sessionId", sessionId)
 	activeChatSession[sessionId] = chatSession
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"charData":  charData,
-		"sessionId": sessionId,
-	})
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	return views.CharacterCreated(charData.Name, sessionId).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) sendMessage(c echo.Context) error {
