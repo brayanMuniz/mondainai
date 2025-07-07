@@ -1,0 +1,37 @@
+{
+    "messages": [
+        {
+            "userText": "こんにちわ",
+            "role": "user"
+        },
+        {
+            "modelResponse": {
+                "message": "えっ…こ、こんにちわ…。",
+                "emotion_picture": "shy",
+                "happy_score": 30,
+                "recalled": [],
+                "recall_oppurtunity": true,
+                "recall_hint": ""
+            },
+            "role": "model"
+        },
+        {
+            "userText": "ギッタ好き？",
+            "role": "user"
+        },
+        {
+            "modelResponse": {
+                "message": "え、えっと…はい…。す、好きです…ギター…。",
+                "emotion_picture": "shy",
+                "happy_score": 50,
+                "recalled": [
+                    "ギターがとても好きで、いつも練習している。",
+                    "ギターは彼女にとって命のようなもの。"
+                ],
+                "recall_oppurtunity": true,
+                "recall_hint": "ギターのこと、もっと聞きたいですか…？"
+            },
+            "role": "model"
+        }
+    ]
+}

@@ -5,6 +5,8 @@ import "context"
 type Provider interface {
 	BuildCharacter(ctx context.Context, name string, scenario string, characterGuide string) (*Character, error)
 	NewChatSession(ctx context.Context, systemPrompt string, recallList []string) (ChatSession, error)
+
+	NewSessionFromMessages(ctx context.Context, systemPrompt string, recallList []string, pastMessages MessageHistory) (ChatSession, error)
 }
 
 type Character struct {
@@ -20,12 +22,6 @@ type ChatSession interface {
 	SendMessage(ctx context.Context, userMessage string) (*LLMResponse, error)
 }
 
-type Message struct {
-	UserText      *string      `json:"userText,omitempty"`
-	ModelResponse *LLMResponse `json:"modelResponse,omitempty"`
-	Role          string       `json:"role"` // user or model
-}
-
 type LLMResponse struct {
 	Message           string   `json:"message"`
 	EmotionPicture    string   `json:"emotion_picture"`
@@ -37,4 +33,10 @@ type LLMResponse struct {
 
 type MessageHistory struct {
 	Messages []Message `json:"messages"`
+}
+
+type Message struct {
+	UserText      *string      `json:"userText,omitempty"`
+	ModelResponse *LLMResponse `json:"modelResponse,omitempty"`
+	Role          string       `json:"role"` // user or model
 }

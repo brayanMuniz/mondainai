@@ -4,14 +4,16 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"github.com/brayanMuniz/mondainai/internal/llm/gemini"
-	"github.com/brayanMuniz/mondainai/views"
+	"github.com/brayanMuniz/mondainai/templates"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/http"
+	"os"
 )
 
 var activeChatSession = make(map[string]llm.ChatSession)
@@ -48,10 +50,56 @@ func NewServer(geminiApiKey string) (*Server, error) {
 
 	}
 
+	// TEMP CODE ===
+	tempCharFile, err := os.ReadFile("temp_char.json")
+	if err != nil {
+		return nil, err
+	}
+	var tempChar llm.Character
+	err = json.Unmarshal(tempCharFile, &tempChar)
+	if err != nil {
+		return nil, err
+	}
+
+	gameplaySystemPrompt := fmt.Sprintf(`
+		あなたは「%s」です。
+		これは「%s」というシナリオです。
+		%s
+ユーザーとの会話は日本語（%sレベル）で行ってください。自然で、キャラクターの性格に合った話し方をしてください。
+日本語の単語や文法を説明したり、英語に翻訳したり、ロム字を使ったりしないでください。
+フリガナ（例：漢字[かんじ] や 漢字(かんじ) の形式）をあなたの応答に含めないでください。フリガナは別のシステムが追加します。
+会話の中で、ユーザーが過去に言ったことやあなたのプロフィール情報（趣味、好きなもの、嫌いなものなど）について言及できるような質問やリアクションをしてください。
+`,
+		tempChar.Name,
+		"N4",
+		tempChar.Scenario,
+		tempChar.PersonaDescription,
+	)
+
+	tempChatFile, err := os.ReadFile("temp_chat.json")
+	if err != nil {
+		return nil, err
+	}
+	var tempChatHistory llm.MessageHistory
+	err = json.Unmarshal(tempChatFile, &tempChatHistory)
+	if err != nil {
+		return nil, err
+	}
+
+	var chatSession llm.ChatSession
+	chatSession, err = providers["gemini"].NewSessionFromMessages(context.Background(), gameplaySystemPrompt, tempChar.RecallableFacts, tempChatHistory)
+	if err != nil {
+		return nil, err
+	}
+
+	activeChatSession["dev"] = chatSession
+	// TEMP CODE ====
+
 	s := &Server{
 		echo:         e,
 		llmproviders: providers,
 	}
+
 	s.setupRoutes()
 	return s, nil
 }
@@ -61,12 +109,12 @@ func (s *Server) Start(addr string) error {
 }
 
 func (s *Server) setupRoutes() {
-	s.echo.Static("/", "templates")
+	s.echo.Static("/", "views")
 
 	api := s.echo.Group("/api")
 	api.POST("/character/build", s.buildCharacter)
 
-	api.GET("/character/chat/:sessionId", s.getMessageHistory)
+	api.GET("/character/chat/:sessionId", s.getChatPage)
 	api.POST("/character/chat/:sessionId", s.sendMessage)
 }
 
@@ -86,14 +134,6 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-
-	fmt.Println("Character Builder ---")
-	fmt.Println("name ", charData.Name)
-	fmt.Println("scenario ", charData.Scenario)
-	fmt.Println("recallable facts ", charData.RecallableFacts)
-	fmt.Println("persona description ", charData.PersonaDescription)
-	fmt.Println("personality traits ", charData.PersonalityTraits)
-	fmt.Println("---")
 
 	gameplaySystemPrompt := fmt.Sprintf(`
 		あなたは「%s」です。
@@ -124,7 +164,8 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	activeChatSession[sessionId] = chatSession
 
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return views.CharacterCreated(charData.Name, sessionId).Render(c.Request().Context(), c.Response().Writer)
+	return templates.CharacterCreated(charData.Name, req.JLPTLevel, charData.RecallableFacts, charData.PersonaDescription, charData.PersonalityTraits, sessionId).Render(c.Request().Context(), c.Response().Writer)
+
 }
 
 func (s *Server) sendMessage(c echo.Context) error {
@@ -152,7 +193,7 @@ func (s *Server) sendMessage(c echo.Context) error {
 	return c.JSON(http.StatusOK, llmReponse)
 }
 
-func (s *Server) getMessageHistory(c echo.Context) error {
+func (s *Server) getChatPage(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 	if sessionId == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
@@ -169,7 +210,11 @@ func (s *Server) getMessageHistory(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not get your message history"))
 	}
 
+	// c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	// return templates.ChatInterface(sessionId, messageHistory.Messages).Render(c.Request().Context(), c.Response().Writer)
+
 	return c.JSON(http.StatusOK, messageHistory)
+
 }
 
 func generateUniqeSessionId() (string, error) {

@@ -4,20 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"google.golang.org/genai"
 )
 
-type Provider struct {
+type GeminiProvider struct {
 	client *genai.Client
 }
 
-type ChatSession struct {
+type GeminiChatSession struct {
 	chat *genai.Chat
 }
 
-func NewProvider(ctx context.Context, apiKey string) (*Provider, error) {
+var minVal float64 = 0
+var maxVal float64 = 100
+
+func NewProvider(ctx context.Context, apiKey string) (*GeminiProvider, error) {
 	genClient, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
@@ -26,12 +28,12 @@ func NewProvider(ctx context.Context, apiKey string) (*Provider, error) {
 		return nil, err
 	}
 
-	return &Provider{
+	return &GeminiProvider{
 		client: genClient,
 	}, nil
 }
 
-func (p *Provider) BuildCharacter(ctx context.Context, name string, scenario string, characterGuide string) (*llm.Character, error) {
+func (p *GeminiProvider) BuildCharacter(ctx context.Context, name string, scenario string, characterGuide string) (*llm.Character, error) {
 
 	systemInstruction := `あなたはキャラクター生成アシスタントです。ユーザーの要望に基づき、アニメ風のキャラクターのプロフィール情報を生成してください。
 キャラクターの具体的な性格描写（ゲームプレイLLM用のプロンプトの一部として機能します）、人間が理解しやすい性格特性の要約、そしてゲーム内でユーザーが言及するとポイントになる「思い出せる事実」のリストを含めてください。`
@@ -90,10 +92,7 @@ func (p *Provider) BuildCharacter(ctx context.Context, name string, scenario str
 	return &charData, nil
 }
 
-func (p *Provider) NewChatSession(ctx context.Context, systemPrompt string, recallList []string) (llm.ChatSession, error) {
-
-	var minVal float64 = 0
-	var maxVal float64 = 100
+func (p *GeminiProvider) NewChatSession(ctx context.Context, systemPrompt string, recallList []string) (llm.ChatSession, error) {
 
 	config := &genai.GenerateContentConfig{
 		ResponseMIMEType:  "application/json",
@@ -131,13 +130,80 @@ func (p *Provider) NewChatSession(ctx context.Context, systemPrompt string, reca
 		return nil, err
 	}
 
-	return &ChatSession{
+	return &GeminiChatSession{
 		chat: chat,
 	}, nil
 
 }
 
-func (s *ChatSession) SendMessage(ctx context.Context, userMessage string) (*llm.LLMResponse, error) {
+func (p *GeminiProvider) NewSessionFromMessages(ctx context.Context, systemPrompt string, recallList []string, pastMessages llm.MessageHistory) (llm.ChatSession, error) {
+
+	config := &genai.GenerateContentConfig{
+		ResponseMIMEType:  "application/json",
+		SystemInstruction: genai.NewContentFromText(systemPrompt, genai.RoleUser),
+		ResponseSchema: &genai.Schema{
+			Type: genai.TypeObject,
+			Properties: map[string]*genai.Schema{
+				"message": {Type: genai.TypeString},
+				"emotion_picture": {
+					Type: genai.TypeString,
+					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
+				},
+				"happy_score": {
+					Type:    genai.TypeInteger,
+					Minimum: &minVal,
+					Maximum: &maxVal,
+				},
+				"recalled": {
+					Type: genai.TypeArray,
+					Items: &genai.Schema{
+						Type: genai.TypeString,
+						Enum: recallList,
+					},
+				},
+				"recall_oppurtunity": {Type: genai.TypeBoolean},
+				"recall_hint":        {Type: genai.TypeString},
+			},
+			PropertyOrdering: []string{"message", "emotion_picture", "happy_score", "recall_oppurtunity", "recall_hint"},
+		},
+	}
+
+	history := make([]*genai.Content, 0, len(pastMessages.Messages))
+	for _, message := range pastMessages.Messages {
+		content := &genai.Content{}
+		if message.Role == "user" && message.UserText != nil {
+			content.Role = genai.RoleUser
+			content.Parts = []*genai.Part{
+				{Text: *message.UserText},
+			}
+		} else {
+			responseJson, err := json.Marshal(message.ModelResponse)
+			if err != nil {
+				return nil, err
+			}
+
+			content.Role = genai.RoleModel
+			content.Parts = []*genai.Part{
+				{Text: string(responseJson)},
+			}
+		}
+
+		history = append(history, content)
+
+	}
+
+	chat, err := p.client.Chats.Create(ctx, "gemini-2.5-flash", config, history)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GeminiChatSession{
+		chat: chat,
+	}, nil
+
+}
+
+func (s *GeminiChatSession) SendMessage(ctx context.Context, userMessage string) (*llm.LLMResponse, error) {
 	res, err := s.chat.SendMessage(ctx, genai.Part{Text: userMessage})
 	if err != nil {
 		return nil, err
@@ -159,7 +225,7 @@ func (s *ChatSession) SendMessage(ctx context.Context, userMessage string) (*llm
 	return &formattedResponse, nil
 }
 
-func (g *ChatSession) GetMessageHistory(ctx context.Context) (*llm.MessageHistory, error) {
+func (g *GeminiChatSession) GetMessageHistory(ctx context.Context) (*llm.MessageHistory, error) {
 	geminiHistory := g.chat.History(false)
 
 	llmMessageHistory := &llm.MessageHistory{
@@ -194,5 +260,4 @@ func (g *ChatSession) GetMessageHistory(ctx context.Context) (*llm.MessageHistor
 	}
 
 	return llmMessageHistory, nil
-
 }

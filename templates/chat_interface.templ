@@ -1,0 +1,10 @@
+package templates
+
+import "github.com/brayanMuniz/mondainai/internal/llm"
+
+templ ChatInterface(sessionId string, messages llm.MessageHistory) {
+	// TODO: make the model messages go on the left side and the user on the right.
+	// at the bottom there should be a chat function to be able to let the user send messages
+	// how do I make it dynamically update when the user receives a message?
+	<div id="message"></div>
+}
