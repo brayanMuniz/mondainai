@@ -222,7 +222,10 @@ func (s *Server) getChatPage(c echo.Context) error {
 	}
 
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return templates.ChatInterface(sessionId, *messageHistory).Render(c.Request().Context(), c.Response().Writer)
+	return templates.GameUI(sessionId, *messageHistory).Render(
+		c.Request().Context(),
+		c.Response().Writer,
+	)
 }
 
 func generateUniqeSessionId() (string, error) {
