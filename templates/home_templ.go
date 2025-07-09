@@ -41,13 +41,13 @@ func HomePage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"main-content-area\" class=\"flex flex-col items-center justify-center text-center\"><h1 class=\"text-3xl font-bold text-gray-800 mb-4\">こんにちわ</h1><p class=\"text-gray-700 mb-2\">This is a web app intended to help you learn 日本語 by dating virtual characters</p><p class=\"text-gray-700 mb-2\">Make sure to have a Japanese keyboard!</p><p class=\"text-gray-700 mb-2 font-bold\">To start off, what would you rate your current Japanese abilities?</p><form hx-post=\"/character/build\" hx-target=\"#main-content-area\" hx-swap=\"innerHTML\"><input type=\"hidden\" name=\"provider\" value=\"gemini\"> <input type=\"hidden\" name=\"name\" value=\"ぼっちちゃん\"> <input type=\"hidden\" name=\"scenario\" value=\"放課後の教室\"> <input type=\"hidden\" name=\"characterGuide\" value=\"とても内気で、緊張するとすぐに挙動不審になる。ギターが命で、陰でこっそり練習している。でも、実は友達が欲しいと思っている。\"><div class=\"space-y-4 text-left mt-4\"><div><input type=\"radio\" id=\"N1\" name=\"jlptLevel\" value=\"N1\" required class=\"mr-2\"> <label for=\"N1\" class=\"text-gray-700\">N1 - 日本人</label></div><div><input type=\"radio\" id=\"N2\" name=\"jlptLevel\" value=\"N2\" required class=\"mr-2\"> <label for=\"N2\" class=\"text-gray-700\">N2 - Pretty Good</label></div><div><input type=\"radio\" id=\"N3\" name=\"jlptLevel\" value=\"N3\" required class=\"mr-2\"> <label for=\"N3\" class=\"text-gray-700\">N3 - 日本語ちょっと</label></div><div><input type=\"radio\" id=\"N4\" name=\"jlptLevel\" value=\"N4\" required class=\"mr-2\"> <label for=\"N4\" class=\"text-gray-700\">N4 - Know Some Kanji</label></div><div><input type=\"radio\" id=\"N5\" name=\"jlptLevel\" value=\"N5\" required class=\"mr-2\"> <label for=\"N5\" class=\"text-gray-700\">N5 - I know hiragana and katakana</label></div></div><button type=\"submit\" class=\"mt-6 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2\">Continue</button></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"flex flex-col items-center justify-center text-center bg-gray-50 min-h-screen font-sans\"><h1 class=\"text-3xl font-bold text-gray-800 mb-4\">こんにちわ</h1><p class=\"text-gray-700 mb-2\">This is a web app intended to help you learn 日本語 by dating virtual characters</p><p class=\"text-gray-700 mb-2\">Make sure to have a Japanese keyboard!</p><p class=\"text-gray-700 mb-2 font-bold\">To start off, what would you rate your current Japanese abilities?</p><form hx-post=\"/character/build\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\"><input type=\"hidden\" name=\"provider\" value=\"gemini\"> <input type=\"hidden\" name=\"name\" value=\"ぼっちちゃん\"> <input type=\"hidden\" name=\"scenario\" value=\"放課後の教室\"> <input type=\"hidden\" name=\"characterGuide\" value=\"とても内気で、緊張するとすぐに挙動不審になる。ギターが命で、陰でこっそり練習している。でも、実は友達が欲しいと思っている。\"><div class=\"space-y-4 text-left mt-4\"><div><input type=\"radio\" id=\"N1\" name=\"jlptLevel\" value=\"N1\" required class=\"mr-2\"> <label for=\"N1\" class=\"text-gray-700\">N1 - 日本人</label></div><div><input type=\"radio\" id=\"N2\" name=\"jlptLevel\" value=\"N2\" required class=\"mr-2\"> <label for=\"N2\" class=\"text-gray-700\">N2 - Pretty Good</label></div><div><input type=\"radio\" id=\"N3\" name=\"jlptLevel\" value=\"N3\" required class=\"mr-2\"> <label for=\"N3\" class=\"text-gray-700\">N3 - 日本語ちょっと</label></div><div><input type=\"radio\" id=\"N4\" name=\"jlptLevel\" value=\"N4\" required class=\"mr-2\"> <label for=\"N4\" class=\"text-gray-700\">N4 - Know Some Kanji</label></div><div><input type=\"radio\" id=\"N5\" name=\"jlptLevel\" value=\"N5\" required class=\"mr-2\"> <label for=\"N5\" class=\"text-gray-700\">N5 - I know hiragana and katakana</label></div></div><button type=\"submit\" class=\"mt-6 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2\">Continue</button></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Base("bg-gray-50 flex items-center justify-center min-h-screen font-sans").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Base().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,14 +77,14 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"character-builder-response\" class=\"text-center mt-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded relative\"><p class=\"font-bold\">Character ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"papa-div\" class=\"text-center mt-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded relative\"><p class=\"font-bold\">Character ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 63, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 60, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -97,7 +97,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(jlptLevel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 64, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 61, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -115,7 +115,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fact)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 68, Col: 14}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 65, Col: 14}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +133,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(personaDescription)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 71, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 68, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -146,7 +146,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(personalityTraits)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 73, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 70, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(sessionId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 74, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 71, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -172,7 +172,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 75, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 72, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -185,13 +185,13 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("/character/chat/" + sessionId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 77, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 74, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-push-url=\"true\" hx-target=\"#main-content-area\" hx-swap=\"outerHTML\" class=\"mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600\">Start Chat</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-push-url=\"true\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\" class=\"mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600\">Start Chat</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

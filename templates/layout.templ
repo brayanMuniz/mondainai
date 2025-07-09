@@ -1,6 +1,6 @@
 package templates
 
-templ Base(bodyClasses string) {
+templ Base() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -17,7 +17,7 @@ templ Base(bodyClasses string) {
 		})
 	</script>
 		</head>
-		<body class={ bodyClasses }>
+		<body>
 			{ children... }
 		</body>
 	</html>
