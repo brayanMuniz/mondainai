@@ -2,9 +2,99 @@ package templates
 
 import "github.com/brayanMuniz/mondainai/internal/llm"
 
+templ ChatTurn(userMessage string, modelResponse llm.LLMResponse) {
+	@messageBubble(llm.Message{UserText: &userMessage, Role: "user"})
+	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
+}
+
+templ ModelResponseBubble(modelResponse llm.LLMResponse) {
+	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
+}
+
+templ messageBubble(message llm.Message) {
+	if message.Role == "user" && message.UserText != nil {
+		<div class="flex justify-end my-2">
+			<div class="bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow">
+				<p>{ *message.UserText }</p>
+			</div>
+		</div>
+	}
+	if message.Role == "model" && message.ModelResponse != nil {
+		<div class="flex justify-start my-2">
+			<div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-lg shadow">
+				<p>{ message.ModelResponse.Message }</p>
+			</div>
+		</div>
+	}
+}
+
 templ ChatInterface(sessionId string, messages llm.MessageHistory) {
-	// TODO: make the model messages go on the left side and the user on the right.
-	// at the bottom there should be a chat function to be able to let the user send messages
-	// how do I make it dynamically update when the user receives a message?
-	<div id="message"></div>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Chatting...</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+		</head>
+		<body class="bg-gray-50">
+			<div id="chat-container" class="flex flex-col h-screen p-4 font-sans max-w-4xl mx-auto">
+				<div id="messages-container" class="flex-grow overflow-y-auto mb-4 px-2">
+					for _, msg := range messages.Messages {
+						@messageBubble(msg)
+					}
+				</div>
+				<form
+					id="chat-form"
+					hx-post={ "/character/chat/" + sessionId }
+					hx-target="#messages-container"
+					hx-swap="beforeend"
+					hx-on::after-request="this.reset()"
+					class="flex-shrink-0 flex"
+				>
+					<input
+						type="text"
+						name="message"
+						class="flex-grow border rounded-l-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+						placeholder="ラーメン"
+						autocomplete="off"
+						autofocus
+					/>
+					<button
+						type="submit"
+						class="bg-blue-500 text-white px-6 py-3 rounded-r-lg hover:bg-blue-600 transition-colors"
+					>
+						Send
+					</button>
+				</form>
+			</div>
+			<script>
+		// This is to make the users message appear before sending the request
+		document.addEventListener("DOMContentLoaded", function () {
+			const form = document.getElementById("chat-form");
+			const messagesContainer = document.getElementById("messages-container");
+			const input = form.querySelector('input[name="message"]');
+
+			form.addEventListener("htmx:beforeRequest", function () {
+				const messageText = input.value;
+				if (!messageText.trim()) {
+					return; // Don't send empty messages
+				}
+
+				const userBubble = document.createElement("div");
+				userBubble.className = "flex justify-end my-2";
+				userBubble.innerHTML = `
+							<div class="bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow">
+								<p>${messageText}</p>
+							</div>
+						`;
+
+				messagesContainer.appendChild(userBubble);
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			});
+		});
+	</script>
+		</body>
+	</html>
 }

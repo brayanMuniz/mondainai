@@ -19,11 +19,11 @@ import (
 var activeChatSession = make(map[string]llm.ChatSession)
 
 type CharacterBuilderRequest struct {
-	Provider       string `json:"provider"` // gemini or openai
-	Name           string `json:"name"`
-	Scenario       string `json:"scenario"`
-	CharacterGuide string `json:"characterGuide"`
-	JLPTLevel      string `json:"jlptLevel"`
+	Provider       string `json:"provider" form:"provider"` // gemini | openai
+	Name           string `json:"name" form:"name"`
+	Scenario       string `json:"scenario" form:"scenario"`
+	CharacterGuide string `json:"characterGuide" form:"characterGuide"`
+	JLPTLevel      string `json:"jlptLevel" form:"jlptLevel"`
 }
 
 type MessageRequest struct {
@@ -109,13 +109,17 @@ func (s *Server) Start(addr string) error {
 }
 
 func (s *Server) setupRoutes() {
-	s.echo.Static("/", "views")
+	s.echo.GET("/", s.homePage)
 
-	api := s.echo.Group("/api")
-	api.POST("/character/build", s.buildCharacter)
+	s.echo.POST("/character/build", s.buildCharacter)
 
-	api.GET("/character/chat/:sessionId", s.getChatPage)
-	api.POST("/character/chat/:sessionId", s.sendMessage)
+	s.echo.GET("/character/chat/:sessionId", s.getChatPage)
+	s.echo.POST("/character/chat/:sessionId", s.sendMessage)
+}
+
+func (s *Server) homePage(c echo.Context) error {
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	return templates.HomePage().Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) buildCharacter(c echo.Context) error {
@@ -179,18 +183,25 @@ func (s *Server) sendMessage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
 	}
 
-	req := new(MessageRequest)
-	if err := c.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	userMessage := c.FormValue("message")
+	if userMessage == "" {
+		return c.NoContent(http.StatusOK)
 	}
 
 	ctx := c.Request().Context()
-	llmReponse, err := chatSession.SendMessage(ctx, req.Message)
+	llmReponse, err := chatSession.SendMessage(ctx, userMessage)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+	log.Println("llm is sending back a message, ", llmReponse.Message)
 
-	return c.JSON(http.StatusOK, llmReponse)
+	// dont need to send back the user message, we just need the response
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	return templates.ModelResponseBubble(*llmReponse).Render(
+		c.Request().Context(),
+		c.Response().Writer,
+	)
+
 }
 
 func (s *Server) getChatPage(c echo.Context) error {
@@ -210,11 +221,8 @@ func (s *Server) getChatPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not get your message history"))
 	}
 
-	// c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	// return templates.ChatInterface(sessionId, messageHistory.Messages).Render(c.Request().Context(), c.Response().Writer)
-
-	return c.JSON(http.StatusOK, messageHistory)
-
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	return templates.ChatInterface(sessionId, *messageHistory).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func generateUniqeSessionId() (string, error) {
