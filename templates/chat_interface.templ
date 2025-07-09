@@ -2,32 +2,6 @@ package templates
 
 import "github.com/brayanMuniz/mondainai/internal/llm"
 
-templ ChatTurn(userMessage string, modelResponse llm.LLMResponse) {
-	@messageBubble(llm.Message{UserText: &userMessage, Role: "user"})
-	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
-}
-
-templ ModelResponseBubble(modelResponse llm.LLMResponse) {
-	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
-}
-
-templ messageBubble(message llm.Message) {
-	if message.Role == "user" && message.UserText != nil {
-		<div class="flex justify-end my-2">
-			<div class="bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow">
-				<p>{ *message.UserText }</p>
-			</div>
-		</div>
-	}
-	if message.Role == "model" && message.ModelResponse != nil {
-		<div class="flex justify-start my-2">
-			<div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-lg shadow">
-				<p>{ message.ModelResponse.Message }</p>
-			</div>
-		</div>
-	}
-}
-
 templ ChatInterface(sessionId string, messages llm.MessageHistory) {
 	<div id="chat-container" class="flex flex-col h-full">
 		<div id="messages-container" class="flex-grow overflow-y-auto mb-4 px-2">
@@ -59,4 +33,30 @@ templ ChatInterface(sessionId string, messages llm.MessageHistory) {
 			</button>
 		</form>
 	</div>
+}
+
+templ ChatTurn(userMessage string, modelResponse llm.LLMResponse) {
+	@messageBubble(llm.Message{UserText: &userMessage, Role: "user"})
+	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
+}
+
+templ ModelResponseBubble(modelResponse llm.LLMResponse) {
+	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
+}
+
+templ messageBubble(message llm.Message) {
+	if message.Role == "user" && message.UserText != nil {
+		<div class="flex justify-end my-2">
+			<div class="bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow">
+				<p>{ *message.UserText }</p>
+			</div>
+		</div>
+	}
+	if message.Role == "model" && message.ModelResponse != nil {
+		<div class="flex justify-start my-2">
+			<div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-lg shadow">
+				<p>{ message.ModelResponse.Message }</p>
+			</div>
+		</div>
+	}
 }

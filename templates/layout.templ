@@ -1,21 +1,23 @@
 package templates
 
-templ Base() {
+templ Base(bodyClasses string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>mondainai</title>
-			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<title>Mondainai</title>
 			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
 			<script>
-		document.body.addEventListener("htmx:responseError", function (evt) {
-			console.error("HTMX Response Erorr: ", evt.detail)
+		document.addEventListener("DOMContentLoaded", function () {
+			document.body.addEventListener("htmx:responseError", function (evt) {
+				console.error("HTMX Response Erorr: ", evt.detail)
+			})
 		})
 	</script>
 		</head>
-		<body class="bg-gray-50 flex items-center justify-center min-h-screen font-sans">
+		<body class={ bodyClasses }>
 			{ children... }
 		</body>
 	</html>

@@ -26,10 +26,6 @@ type CharacterBuilderRequest struct {
 	JLPTLevel      string `json:"jlptLevel" form:"jlptLevel"`
 }
 
-type MessageRequest struct {
-	Message string `json:"message"`
-}
-
 type Server struct {
 	echo         *echo.Echo
 	llmproviders map[string]llm.Provider
@@ -50,7 +46,7 @@ func NewServer(geminiApiKey string) (*Server, error) {
 
 	}
 
-	// TEMP CODE ===
+	// TEMP CODE for quickly going to /character/chat/dev ===
 	tempCharFile, err := os.ReadFile("temp_char.json")
 	if err != nil {
 		return nil, err
@@ -93,7 +89,7 @@ func NewServer(geminiApiKey string) (*Server, error) {
 	}
 
 	activeChatSession["dev"] = chatSession
-	// TEMP CODE ====
+	// TEMP CODE ===
 
 	s := &Server{
 		echo:         e,

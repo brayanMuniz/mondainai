@@ -31,15 +31,33 @@ func GameUI(sessionId string, messages llm.MessageHistory) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>A Conversation</title><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js\"></script></head><body class=\"bg-slate-900\"><template id=\"user-message-template\"><div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow\"><p class=\"message-text\"></p></div></div></template><div class=\"flex h-screen\"><div class=\"w-[25%] bg-slate-800 p-6 flex flex-col space-y-6\"><div id=\"emotion-pic\" class=\"bg-slate-700/50 rounded-lg aspect-square flex items-center justify-center\"><p class=\"text-slate-400\">Emotion Pic</p></div><div id=\"timer\" class=\"bg-slate-700/50 rounded-lg h-24 flex items-center justify-center\"><p class=\"text-slate-400\">Timer</p></div><div id=\"yen\" class=\"bg-slate-700/50 rounded-lg h-16 flex items-center justify-center\"><p class=\"text-slate-400\">Yen</p></div><div class=\"flex-grow\"></div></div><div class=\"w-[50%] flex flex-col p-4 bg-slate-100 text-black\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = ChatInterface(sessionId, messages).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"w-[25%] bg-slate-800 p-6\"><div class=\"bg-slate-700/50 rounded-lg h-full flex items-center justify-center\"><p class=\"text-slate-400\">Game Helper</p></div></div></div><script>\n\n\t\tdocument.getElementById(\"chat-form\").addEventListener(\"htmx:beforeRequest\", function (evt) {\n\t\t\tconst messageInput = evt.target.querySelector('input[name=\"message\"]');\n\t\t\tconst messageText = messageInput.value;\n\t\t\tif (!messageText.trim()) return;\n\n\t\t\tconst template = document.getElementById(\"user-message-template\");\n\t\t\tconst clone = template.content.cloneNode(true);\n\t\t\tclone.querySelector(\".message-text\").textContent = messageText;\n\n\t\t\tconst messagesContainer = document.getElementById(\"messages-container\");\n\t\t\tmessagesContainer.appendChild(clone);\n\t\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t\t});\n\t</script></body></html>")
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template id=\"user-message-template\"><div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow\"><p class=\"message-text\"></p></div></div></template><div class=\"flex h-screen\"><div class=\"w-[25%] bg-slate-800 p-6 flex flex-col space-y-6\"><div id=\"emotion-pic\" class=\"bg-slate-700/50 rounded-lg aspect-square flex items-center justify-center\"><p class=\"text-slate-400\">Emotion Pic</p></div><div id=\"timer\" class=\"bg-slate-700/50 rounded-lg h-24 flex items-center justify-center\"><p class=\"text-slate-400\">Timer</p></div><div id=\"yen\" class=\"bg-slate-700/50 rounded-lg h-16 flex items-center justify-center\"><p class=\"text-slate-400\">Yen</p></div><div class=\"flex-grow\"></div></div><div class=\"w-[50%] flex flex-col p-4 bg-slate-100 text-black\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ChatInterface(sessionId, messages).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"w-[25%] bg-slate-800 p-6\"><div class=\"bg-slate-700/50 rounded-lg h-full flex items-center justify-center\"><p class=\"text-slate-400\">Game Helper</p></div></div></div><script>\n\n\tdocument.getElementById(\"chat-form\").addEventListener(\"htmx:beforeRequest\", function (evt) {\n\t\tconst messageInput = evt.target.querySelector('input[name=\"message\"]');\n\t\tconst messageText = messageInput.value;\n\t\tif (!messageText.trim()) return;\n\n\t\tconst template = document.getElementById(\"user-message-template\");\n\t\tconst clone = template.content.cloneNode(true);\n\t\tclone.querySelector(\".message-text\").textContent = messageText;\n\n\t\tconst messagesContainer = document.getElementById(\"messages-container\");\n\t\tmessagesContainer.appendChild(clone);\n\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t});\n</script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = Base("bg-slate-900").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
