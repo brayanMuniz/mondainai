@@ -8,6 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "github.com/brayanMuniz/mondainai/internal/game"
+
 func HomePage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -41,7 +43,7 @@ func HomePage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"flex flex-col items-center justify-center text-center bg-gray-50 min-h-screen font-sans\"><h1 class=\"text-3xl font-bold text-gray-800 mb-4\">こんにちわ</h1><p class=\"text-gray-700 mb-2\">This is a web app intended to help you learn 日本語 by dating virtual characters</p><p class=\"text-gray-700 mb-2\">Make sure to have a Japanese keyboard!</p><p class=\"text-gray-700 mb-2 font-bold\">To start off, what would you rate your current Japanese abilities?</p><form hx-post=\"/character/build\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\"><input type=\"hidden\" name=\"provider\" value=\"gemini\"> <input type=\"hidden\" name=\"name\" value=\"ぼっちちゃん\"> <input type=\"hidden\" name=\"scenario\" value=\"放課後の教室\"> <input type=\"hidden\" name=\"characterGuide\" value=\"とても内気で、緊張するとすぐに挙動不審になる。ギターが命で、陰でこっそり練習している。でも、実は友達が欲しいと思っている。\"><div class=\"space-y-4 text-left mt-4\"><div><input type=\"radio\" id=\"N1\" name=\"jlptLevel\" value=\"N1\" required class=\"mr-2\"> <label for=\"N1\" class=\"text-gray-700\">N1 - 日本人</label></div><div><input type=\"radio\" id=\"N2\" name=\"jlptLevel\" value=\"N2\" required class=\"mr-2\"> <label for=\"N2\" class=\"text-gray-700\">N2 - Pretty Good</label></div><div><input type=\"radio\" id=\"N3\" name=\"jlptLevel\" value=\"N3\" required class=\"mr-2\"> <label for=\"N3\" class=\"text-gray-700\">N3 - 日本語ちょっと</label></div><div><input type=\"radio\" id=\"N4\" name=\"jlptLevel\" value=\"N4\" required class=\"mr-2\"> <label for=\"N4\" class=\"text-gray-700\">N4 - Know Some Kanji</label></div><div><input type=\"radio\" id=\"N5\" name=\"jlptLevel\" value=\"N5\" required class=\"mr-2\"> <label for=\"N5\" class=\"text-gray-700\">N5 - I know hiragana and katakana</label></div></div><button type=\"submit\" class=\"mt-6 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2\">Continue</button></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"flex flex-col items-center justify-center text-center bg-gray-50 min-h-screen font-sans\"><h1 class=\"text-3xl font-bold text-gray-800 mb-4\">こんにちわ</h1><p class=\"text-gray-700 mb-2\">This is a web app intended to help you learn 日本語 by dating virtual characters</p><p class=\"text-gray-700 mb-2\">Make sure to have a Japanese keyboard!</p><p class=\"text-gray-700 mb-2 font-bold\">To start off, what would you rate your current Japanese abilities?</p><form hx-post=\"/character/build\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\"><input type=\"hidden\" name=\"provider\" value=\"gemini\"> <input type=\"hidden\" name=\"name\" value=\"ぼっちちゃん\"> <input type=\"hidden\" name=\"scenario\" value=\"放課後の教室\"> <input type=\"hidden\" name=\"characterGuide\" value=\"とても内気で、緊張するとすぐに挙動不審になる。ギターが命で、陰でこっそり練習している。でも、実は友達が欲しいと思っている。\"><div class=\"space-y-4 text-left mt-4\"><div><input type=\"radio\" id=\"N1\" name=\"jlptLevel\" value=\"0\" required class=\"mr-2\"> <label for=\"N1\" class=\"text-gray-700\">N1 - 日本人</label></div><div><input type=\"radio\" id=\"N2\" name=\"jlptLevel\" value=\"1\" required class=\"mr-2\"> <label for=\"N2\" class=\"text-gray-700\">N2 - Pretty Good</label></div><div><input type=\"radio\" id=\"N3\" name=\"jlptLevel\" value=\"2\" required class=\"mr-2\"> <label for=\"N3\" class=\"text-gray-700\">N3 - 日本語ちょっと</label></div><div><input type=\"radio\" id=\"N4\" name=\"jlptLevel\" value=\"3\" required class=\"mr-2\"> <label for=\"N4\" class=\"text-gray-700\">N4 - Know Some Kanji</label></div><div><input type=\"radio\" id=\"N5\" name=\"jlptLevel\" value=\"4\" required class=\"mr-2\"> <label for=\"N5\" class=\"text-gray-700\">N5 - I know hiragana and katakana</label></div></div><button type=\"submit\" class=\"mt-6 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2\">Continue</button></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,7 +57,7 @@ func HomePage() templ.Component {
 	})
 }
 
-func CharacterCreated(name string, jlptLevel string, recallableFacts []string, personaDescription string,
+func CharacterCreated(name string, jlptLevel game.JLPTLevel, recallableFacts []string, personaDescription string,
 	personalityTraits string, sessionId string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -84,7 +86,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 60, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 62, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -97,7 +99,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(jlptLevel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 61, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 63, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -115,7 +117,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fact)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 65, Col: 14}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 67, Col: 14}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -133,7 +135,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(personaDescription)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 68, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 70, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -146,7 +148,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(personalityTraits)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 70, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 72, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -159,7 +161,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(sessionId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 71, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 73, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -172,7 +174,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 72, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 74, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -185,7 +187,7 @@ func CharacterCreated(name string, jlptLevel string, recallableFacts []string, p
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("/character/chat/" + sessionId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 74, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/home.templ`, Line: 76, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {

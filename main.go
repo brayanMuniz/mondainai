@@ -1,11 +1,10 @@
 package main
 
 import (
-	"log"
-	"os"
-
 	"github.com/brayanMuniz/mondainai/server"
 	"github.com/joho/godotenv"
+	"log"
+	"os"
 )
 
 func main() {
@@ -24,5 +23,5 @@ func main() {
 		log.Fatal("悲し！")
 	}
 
-	log.Fatal(s.Start(":1323"))
+	s.Start(":1323")
 }

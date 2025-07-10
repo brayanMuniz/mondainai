@@ -16,9 +16,6 @@ type GeminiChatSession struct {
 	chat *genai.Chat
 }
 
-var minVal float64 = 0
-var maxVal float64 = 100
-
 func NewProvider(ctx context.Context, apiKey string) (*GeminiProvider, error) {
 	genClient, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
@@ -34,7 +31,6 @@ func NewProvider(ctx context.Context, apiKey string) (*GeminiProvider, error) {
 }
 
 func (p *GeminiProvider) BuildCharacter(ctx context.Context, name string, scenario string, characterGuide string) (*llm.Character, error) {
-
 	systemInstruction := `あなたはキャラクター生成アシスタントです。ユーザーの要望に基づき、アニメ風のキャラクターのプロフィール情報を生成してください。
 キャラクターの具体的な性格描写（ゲームプレイLLM用のプロンプトの一部として機能します）、人間が理解しやすい性格特性の要約、そしてゲーム内でユーザーが言及するとポイントになる「思い出せる事実」のリストを含めてください。`
 
@@ -93,37 +89,7 @@ func (p *GeminiProvider) BuildCharacter(ctx context.Context, name string, scenar
 }
 
 func (p *GeminiProvider) NewChatSession(ctx context.Context, systemPrompt string, recallList []string) (llm.ChatSession, error) {
-
-	config := &genai.GenerateContentConfig{
-		ResponseMIMEType:  "application/json",
-		SystemInstruction: genai.NewContentFromText(systemPrompt, genai.RoleUser),
-		ResponseSchema: &genai.Schema{
-			Type: genai.TypeObject,
-			Properties: map[string]*genai.Schema{
-				"message": {Type: genai.TypeString},
-				"emotion_picture": {
-					Type: genai.TypeString,
-					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
-				},
-				"happy_score": {
-					Type:    genai.TypeInteger,
-					Minimum: &minVal,
-					Maximum: &maxVal,
-				},
-				"recalled": {
-					Type: genai.TypeArray,
-					Items: &genai.Schema{
-						Type: genai.TypeString,
-						Enum: recallList,
-					},
-				},
-				"recall_oppurtunity": {Type: genai.TypeBoolean},
-				"recall_hint":        {Type: genai.TypeString},
-			},
-			PropertyOrdering: []string{"message", "emotion_picture", "happy_score", "recall_oppurtunity", "recall_hint"},
-		},
-	}
-
+	config := newGameplayConfig(systemPrompt, recallList)
 	history := []*genai.Content{}
 	chat, err := p.client.Chats.Create(ctx, "gemini-2.5-flash", config, history)
 	if err != nil {
@@ -137,37 +103,7 @@ func (p *GeminiProvider) NewChatSession(ctx context.Context, systemPrompt string
 }
 
 func (p *GeminiProvider) NewSessionFromMessages(ctx context.Context, systemPrompt string, recallList []string, pastMessages llm.MessageHistory) (llm.ChatSession, error) {
-
-	config := &genai.GenerateContentConfig{
-		ResponseMIMEType:  "application/json",
-		SystemInstruction: genai.NewContentFromText(systemPrompt, genai.RoleUser),
-		ResponseSchema: &genai.Schema{
-			Type: genai.TypeObject,
-			Properties: map[string]*genai.Schema{
-				"message": {Type: genai.TypeString},
-				"emotion_picture": {
-					Type: genai.TypeString,
-					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
-				},
-				"happy_score": {
-					Type:    genai.TypeInteger,
-					Minimum: &minVal,
-					Maximum: &maxVal,
-				},
-				"recalled": {
-					Type: genai.TypeArray,
-					Items: &genai.Schema{
-						Type: genai.TypeString,
-						Enum: recallList,
-					},
-				},
-				"recall_oppurtunity": {Type: genai.TypeBoolean},
-				"recall_hint":        {Type: genai.TypeString},
-			},
-			PropertyOrdering: []string{"message", "emotion_picture", "happy_score", "recall_oppurtunity", "recall_hint"},
-		},
-	}
-
+	config := newGameplayConfig(systemPrompt, recallList)
 	history := make([]*genai.Content, 0, len(pastMessages.Messages))
 	for _, message := range pastMessages.Messages {
 		content := &genai.Content{}
@@ -177,19 +113,13 @@ func (p *GeminiProvider) NewSessionFromMessages(ctx context.Context, systemPromp
 				{Text: *message.UserText},
 			}
 		} else {
-			responseJson, err := json.Marshal(message.ModelResponse)
-			if err != nil {
-				return nil, err
-			}
-
 			content.Role = genai.RoleModel
 			content.Parts = []*genai.Part{
-				{Text: string(responseJson)},
+				{Text: message.ModelResponse.Message},
 			}
 		}
 
 		history = append(history, content)
-
 	}
 
 	chat, err := p.client.Chats.Create(ctx, "gemini-2.5-flash", config, history)
@@ -209,9 +139,10 @@ func (s *GeminiChatSession) SendMessage(ctx context.Context, userMessage string)
 		return nil, err
 	}
 
-	// "Inappropriate" message sent
-	if len(res.Candidates) == 0 || res.Candidates[0].Content == nil || len(res.Candidates[0].Content.Parts) == 0 {
-		return nil, err
+	if len(res.Candidates) == 0 ||
+		res.Candidates[0].Content == nil ||
+		len(res.Candidates[0].Content.Parts) == 0 {
+		return nil, fmt.Errorf("received an empty or blocked response from Gemini API")
 	}
 
 	chatResponse := res.Candidates[0].Content.Parts[0].Text
@@ -260,4 +191,37 @@ func (g *GeminiChatSession) GetMessageHistory(ctx context.Context) (*llm.Message
 	}
 
 	return llmMessageHistory, nil
+}
+
+func newGameplayConfig(systemPrompt string, recallList []string) *genai.GenerateContentConfig {
+	return &genai.GenerateContentConfig{
+		ResponseMIMEType:  "application/json",
+		SystemInstruction: genai.NewContentFromText(systemPrompt, genai.RoleUser),
+		ResponseSchema: &genai.Schema{
+			Type: genai.TypeObject,
+			Properties: map[string]*genai.Schema{
+				"message": {Type: genai.TypeString},
+				"emotion_picture": {
+					Type: genai.TypeString,
+					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
+				},
+				"happy_score": {
+					Type:    genai.TypeInteger,
+					Minimum: &llm.MinHappyScore,
+					Maximum: &llm.MaxHappyScore,
+				},
+				"recalled": {
+					Type: genai.TypeArray,
+					Items: &genai.Schema{
+						Type: genai.TypeString,
+						Enum: recallList,
+					},
+				},
+				"recall_oppurtunity": {Type: genai.TypeBoolean},
+				"recall_hint":        {Type: genai.TypeString},
+			},
+			PropertyOrdering: []string{"message", "emotion_picture", "happy_score", "recall_oppurtunity", "recall_hint"},
+		},
+	}
+
 }

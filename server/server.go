@@ -6,24 +6,26 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/brayanMuniz/mondainai/internal/game"
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"github.com/brayanMuniz/mondainai/internal/llm/gemini"
 	"github.com/brayanMuniz/mondainai/templates"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"log"
-	"net/http"
-	"os"
 )
 
-var activeChatSession = make(map[string]llm.ChatSession)
+var activeGameSession = make(map[string]*game.Game)
 
 type CharacterBuilderRequest struct {
-	Provider       string `json:"provider" form:"provider"` // gemini | openai
-	Name           string `json:"name" form:"name"`
-	Scenario       string `json:"scenario" form:"scenario"`
-	CharacterGuide string `json:"characterGuide" form:"characterGuide"`
-	JLPTLevel      string `json:"jlptLevel" form:"jlptLevel"`
+	Provider       string         `json:"provider" form:"provider"` // gemini | openai
+	Name           string         `json:"name" form:"name"`
+	Scenario       string         `json:"scenario" form:"scenario"`
+	CharacterGuide string         `json:"characterGuide" form:"characterGuide"`
+	JLPTLevel      game.JLPTLevel `json:"jlptLevel" form:"jlptLevel"`
 }
 
 type Server struct {
@@ -67,7 +69,7 @@ func NewServer(geminiApiKey string) (*Server, error) {
 会話の中で、ユーザーが過去に言ったことやあなたのプロフィール情報（趣味、好きなもの、嫌いなものなど）について言及できるような質問やリアクションをしてください。
 `,
 		tempChar.Name,
-		"N4",
+		game.N3,
 		tempChar.Scenario,
 		tempChar.PersonaDescription,
 	)
@@ -88,7 +90,12 @@ func NewServer(geminiApiKey string) (*Server, error) {
 		return nil, err
 	}
 
-	activeChatSession["dev"] = chatSession
+	newGameSession, err := game.NewGameSession("dev", tempChar, chatSession, game.N3)
+	if err != nil {
+		return nil, err
+	}
+	activeGameSession["dev"] = newGameSession
+
 	// TEMP CODE ===
 
 	s := &Server{
@@ -129,8 +136,7 @@ func (s *Server) buildCharacter(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("provide a valid provider"))
 	}
 
-	ctx := c.Request().Context()
-	charData, err := provider.BuildCharacter(ctx, req.Name, req.Scenario, req.CharacterGuide)
+	charData, err := provider.BuildCharacter(c.Request().Context(), req.Name, req.Scenario, req.CharacterGuide)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -151,7 +157,7 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	)
 
 	var chatSession llm.ChatSession
-	chatSession, err = provider.NewChatSession(ctx, gameplaySystemPrompt, charData.RecallableFacts)
+	chatSession, err = provider.NewChatSession(c.Request().Context(), gameplaySystemPrompt, charData.RecallableFacts)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -160,8 +166,12 @@ func (s *Server) buildCharacter(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	log.Println("saving sessionId", sessionId)
-	activeChatSession[sessionId] = chatSession
+
+	newGameSession, err := game.NewGameSession(sessionId, *charData, chatSession, req.JLPTLevel)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	activeGameSession[sessionId] = newGameSession
 
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 	return templates.CharacterCreated(charData.Name, req.JLPTLevel, charData.RecallableFacts, charData.PersonaDescription, charData.PersonalityTraits, sessionId).Render(c.Request().Context(), c.Response().Writer)
@@ -174,29 +184,37 @@ func (s *Server) sendMessage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
 	}
 
-	chatSession, ok := activeChatSession[sessionId]
+	gameSession, ok := activeGameSession[sessionId]
 	if !ok {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
 	}
 
 	userMessage := c.FormValue("message")
 	if userMessage == "" {
-		return c.NoContent(http.StatusOK)
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	ctx := c.Request().Context()
-	llmReponse, err := chatSession.SendMessage(ctx, userMessage)
+	err := gameSession.ProcessUserMessage(ctx, userMessage)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not send message"))
 	}
-	log.Println("llm is sending back a message, ", llmReponse.Message)
+	log.Printf("Session %s - Game State After Turn:\n%+v", sessionId, gameSession)
 
-	// dont need to send back the user message, we just need the response
-	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return templates.ModelResponseBubble(*llmReponse).Render(
-		c.Request().Context(),
-		c.Response().Writer,
-	)
+	//
+	// llmReponse, err := gameSession.ModelSession.SendMessage(ctx, userMessage)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	// }
+	//
+	// c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	// return templates.ModelResponseBubble(*llmReponse).Render(
+	// 	c.Request().Context(),
+	// 	c.Response().Writer,
+	// )
+	//
+
+	return c.JSON(http.StatusOK, struct{}{})
 
 }
 
@@ -206,13 +224,13 @@ func (s *Server) getChatPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
 	}
 
-	chatSession, ok := activeChatSession[sessionId]
+	gameSession, ok := activeGameSession[sessionId]
 	if !ok {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
 	}
 
 	ctx := c.Request().Context()
-	messageHistory, err := chatSession.GetMessageHistory(ctx)
+	messageHistory, err := gameSession.ModelSession.GetMessageHistory(ctx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not get your message history"))
 	}
