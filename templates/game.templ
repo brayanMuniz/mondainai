@@ -1,63 +1,89 @@
 package templates
 
-import "github.com/brayanMuniz/mondainai/internal/llm"
+import (
+	"fmt"
+	"github.com/brayanMuniz/mondainai/internal/game"
+)
 
-templ GameUI(sessionId string, messages llm.MessageHistory) {
+templ GameUI(g *game.Game) {
 	@Base() {
-		<div id="papa-div" class="">
-			<template id="user-message-template">
-				<div class="flex justify-end my-2">
-					<div class="bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow">
-						<p class="message-text"></p>
-					</div>
-				</div>
-			</template>
+		<div id="papa-div" class="bg-slate-900 text-white">
 			<div class="flex h-screen">
 				<!-- Left Sidebar -->
-				<div class="w-[25%] bg-slate-800 p-6 flex flex-col space-y-6">
+				<div class="w-[25%] bg-slate-800 p-6 flex flex-col space-y-4">
 					<div
 						id="emotion-pic"
-						class="bg-slate-700/50 rounded-lg aspect-square flex items-center justify-center"
+						class="bg-slate-700/50 rounded-lg aspect-square flex flex-col items-center justify-center p-4"
 					>
-						<p class="text-slate-400">Emotion Pic</p>
+						<p class="text-lg font-semibold text-slate-300 mb-2">Emotion</p>
+						<p class="text-4xl">{ g.CurrentCharacterEmotion.String() }</p>
 					</div>
-					<div id="timer" class="bg-slate-700/50 rounded-lg h-24 flex items-center justify-center">
-						<p class="text-slate-400">Timer</p>
+					<div
+						id="happy-score"
+						class="bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center"
+					>
+						<p class="text-md font-semibold text-slate-300">Happy Score</p>
+						<p class="text-2xl font-bold">{ fmt.Sprintf("%d", g.HappyScore) }</p>
 					</div>
-					<div id="yen" class="bg-slate-700/50 rounded-lg h-16 flex items-center justify-center">
-						<p class="text-slate-400">Yen</p>
+					<div
+						id="timer"
+						class="bg-slate-700/50 rounded-lg h-24 flex flex-col items-center justify-center"
+					>
+						<p class="text-md font-semibold text-slate-300">Timer</p>
+						<p class="text-3xl font-mono">{ fmt.Sprintf("%d", g.AllowedTime) }</p>
+					</div>
+					<div id="yen" class="bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center">
+						<p class="text-md font-semibold text-slate-300">Yen</p>
+						<p class="text-2xl font-bold">{ fmt.Sprintf("¥%d", g.CurrentYen) }</p>
 					</div>
 					<div class="flex-grow"></div>
 				</div>
 				<!-- Center Chat Area -->
-				<div class="w-[50%] flex flex-col p-4 bg-slate-100 text-black">
-					@ChatInterface(sessionId, messages)
+				<div class="w-[50%] flex flex-col bg-slate-200 text-black p-4">
+					@ChatInterface(g.SessionId, g.MessageHistory)
 				</div>
 				<!-- Right Sidebar -->
 				<div class="w-[25%] bg-slate-800 p-6">
-					<div class="bg-slate-700/50 rounded-lg h-full flex items-center justify-center">
-						<p class="text-slate-400">Game Helper</p>
+					<div class="bg-slate-700/50 rounded-lg h-full flex flex-col p-4 space-y-4">
+						<h2 class="text-xl font-bold text-center text-slate-200">Game Helper</h2>
+						if g.IsCurrentRecallOppurtunity && g.CurrentRecallHint != "" {
+							<div class="bg-yellow-900/50 border border-yellow-600 rounded-lg p-3">
+								<p class="text-yellow-300 font-semibold">Recall Opportunity!</p>
+								<p class="text-yellow-400 italic">
+									"{ g.CurrentRecallHint }"
+								</p>
+							</div>
+						}
+						<div>
+							<h3 class="text-lg font-semibold text-slate-300 mb-2">Recalled Facts</h3>
+							<ul class="list-disc list-inside space-y-1 text-slate-400">
+								if len(g.UserRecalledTheseFacts) == 0 {
+									<li>No facts recalled yet.</li>
+								} else {
+									for fact, _ := range g.UserRecalledTheseFacts {
+										<li>{ fact }</li>
+									}
+								}
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<script>
-	const chatForm = document.getElementById("chat-form");
-	if (chatForm) {
-		chatForm.addEventListener("htmx:beforeRequest", function (evt) {
-			const messageInput = evt.target.querySelector('input[name="message"]');
-			const messageText = messageInput.value;
-			if (!messageText.trim()) return;
-
-			const template = document.getElementById("user-message-template");
-			const clone = template.content.cloneNode(true);
-			clone.querySelector(".message-text").textContent = messageText;
-
-			const messagesContainer = document.getElementById("messages-container");
-			messagesContainer.appendChild(clone);
+	document.body.addEventListener('htmx:afterSwap', function (event) {
+		// After HTMX swaps the content, find the new message container and scroll it down.
+		const messagesContainer = document.getElementById("messages-container");
+		if (messagesContainer) {
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
-		});
-	}
+		}
+
+		// find the new input and focus it 
+		const messageInput = document.querySelector('input[name="message"]');
+		if (messageInput) {
+			messageInput.focus();
+		}
+	});
 </script>
 	}
 }

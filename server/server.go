@@ -181,41 +181,32 @@ func (s *Server) buildCharacter(c echo.Context) error {
 func (s *Server) sendMessage(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 	if sessionId == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no sessionId provided"))
+		return echo.NewHTTPError(http.StatusBadRequest, "no sessionId provided")
 	}
 
 	gameSession, ok := activeGameSession[sessionId]
 	if !ok {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
+		return echo.NewHTTPError(http.StatusNotFound, "Your session was not found")
 	}
 
 	userMessage := c.FormValue("message")
 	if userMessage == "" {
-		return c.NoContent(http.StatusBadRequest)
+		return c.NoContent(http.StatusOK)
 	}
 
 	ctx := c.Request().Context()
 	err := gameSession.ProcessUserMessage(ctx, userMessage)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not send message"))
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			"Could not process message",
+		)
 	}
 	log.Printf("Session %s - Game State After Turn:\n%+v", sessionId, gameSession)
 
-	//
-	// llmReponse, err := gameSession.ModelSession.SendMessage(ctx, userMessage)
-	// if err != nil {
-	// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	// }
-	//
-	// c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	// return templates.ModelResponseBubble(*llmReponse).Render(
-	// 	c.Request().Context(),
-	// 	c.Response().Writer,
-	// )
-	//
-
-	return c.JSON(http.StatusOK, struct{}{})
-
+	// Re-render the entire GameUI with the updated session state.
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	return templates.GameUI(gameSession).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) getChatPage(c echo.Context) error {
@@ -229,17 +220,12 @@ func (s *Server) getChatPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Errorf("Your session was not found"))
 	}
 
-	ctx := c.Request().Context()
-	messageHistory, err := gameSession.ModelSession.GetMessageHistory(ctx)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("Could not get your message history"))
-	}
-
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return templates.GameUI(sessionId, *messageHistory).Render(
+	return templates.GameUI(gameSession).Render(
 		c.Request().Context(),
 		c.Response().Writer,
 	)
+
 }
 
 func generateUniqeSessionId() (string, error) {

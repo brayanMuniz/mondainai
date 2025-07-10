@@ -53,6 +53,19 @@ const (
 	Shy         Emotion = "Shy"
 )
 
+func (e Emotion) String() string {
+	switch e {
+	case Neutral:
+		return "Neutral"
+	case Happy:
+		return "Happy"
+	case Sad:
+		return "Sad"
+	default:
+		return "Unknown"
+	}
+}
+
 func GetEmotionList() []string {
 	return []string{
 		string(Happy),

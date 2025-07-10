@@ -8,9 +8,12 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/brayanMuniz/mondainai/internal/llm"
+import (
+	"fmt"
+	"github.com/brayanMuniz/mondainai/internal/game"
+)
 
-func GameUI(sessionId string, messages llm.MessageHistory) templ.Component {
+func GameUI(g *game.Game) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,15 +46,120 @@ func GameUI(sessionId string, messages llm.MessageHistory) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"\"><template id=\"user-message-template\"><div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow\"><p class=\"message-text\"></p></div></div></template><div class=\"flex h-screen\"><!-- Left Sidebar --><div class=\"w-[25%] bg-slate-800 p-6 flex flex-col space-y-6\"><div id=\"emotion-pic\" class=\"bg-slate-700/50 rounded-lg aspect-square flex items-center justify-center\"><p class=\"text-slate-400\">Emotion Pic</p></div><div id=\"timer\" class=\"bg-slate-700/50 rounded-lg h-24 flex items-center justify-center\"><p class=\"text-slate-400\">Timer</p></div><div id=\"yen\" class=\"bg-slate-700/50 rounded-lg h-16 flex items-center justify-center\"><p class=\"text-slate-400\">Yen</p></div><div class=\"flex-grow\"></div></div><!-- Center Chat Area --><div class=\"w-[50%] flex flex-col p-4 bg-slate-100 text-black\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"bg-slate-900 text-white\"><div class=\"flex h-screen\"><!-- Left Sidebar --><div class=\"w-[25%] bg-slate-800 p-6 flex flex-col space-y-4\"><div id=\"emotion-pic\" class=\"bg-slate-700/50 rounded-lg aspect-square flex flex-col items-center justify-center p-4\"><p class=\"text-lg font-semibold text-slate-300 mb-2\">Emotion</p><p class=\"text-4xl\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ChatInterface(sessionId, messages).Render(ctx, templ_7745c5c3_Buffer)
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(g.CurrentCharacterEmotion.String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 19, Col: 62}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Right Sidebar --><div class=\"w-[25%] bg-slate-800 p-6\"><div class=\"bg-slate-700/50 rounded-lg h-full flex items-center justify-center\"><p class=\"text-slate-400\">Game Helper</p></div></div></div></div><script>\n\tconst chatForm = document.getElementById(\"chat-form\");\n\tif (chatForm) {\n\t\tchatForm.addEventListener(\"htmx:beforeRequest\", function (evt) {\n\t\t\tconst messageInput = evt.target.querySelector('input[name=\"message\"]');\n\t\t\tconst messageText = messageInput.value;\n\t\t\tif (!messageText.trim()) return;\n\n\t\t\tconst template = document.getElementById(\"user-message-template\");\n\t\t\tconst clone = template.content.cloneNode(true);\n\t\t\tclone.querySelector(\".message-text\").textContent = messageText;\n\n\t\t\tconst messagesContainer = document.getElementById(\"messages-container\");\n\t\t\tmessagesContainer.appendChild(clone);\n\t\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t\t});\n\t}\n</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><div id=\"happy-score\" class=\"bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center\"><p class=\"text-md font-semibold text-slate-300\">Happy Score</p><p class=\"text-2xl font-bold\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", g.HappyScore))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 26, Col: 69}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p></div><div id=\"timer\" class=\"bg-slate-700/50 rounded-lg h-24 flex flex-col items-center justify-center\"><p class=\"text-md font-semibold text-slate-300\">Timer</p><p class=\"text-3xl font-mono\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", g.AllowedTime))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 33, Col: 70}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div id=\"yen\" class=\"bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center\"><p class=\"text-md font-semibold text-slate-300\">Yen</p><p class=\"text-2xl font-bold\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("¥%d", g.CurrentYen))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 37, Col: 71}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div><div class=\"flex-grow\"></div></div><!-- Center Chat Area --><div class=\"w-[50%] flex flex-col bg-slate-200 text-black p-4\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ChatInterface(g.SessionId, g.MessageHistory).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Right Sidebar --><div class=\"w-[25%] bg-slate-800 p-6\"><div class=\"bg-slate-700/50 rounded-lg h-full flex flex-col p-4 space-y-4\"><h2 class=\"text-xl font-bold text-center text-slate-200\">Game Helper</h2>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if g.IsCurrentRecallOppurtunity && g.CurrentRecallHint != "" {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"bg-yellow-900/50 border border-yellow-600 rounded-lg p-3\"><p class=\"text-yellow-300 font-semibold\">Recall Opportunity!</p><p class=\"text-yellow-400 italic\">\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var7 string
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(g.CurrentRecallHint)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 53, Col: 31}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"</p></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div><h3 class=\"text-lg font-semibold text-slate-300 mb-2\">Recalled Facts</h3><ul class=\"list-disc list-inside space-y-1 text-slate-400\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if len(g.UserRecalledTheseFacts) == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<li>No facts recalled yet.</li>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				for fact, _ := range g.UserRecalledTheseFacts {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<li>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var8 string
+					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fact)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 64, Col: 20}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</li>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</ul></div></div></div></div></div><script>\n\tdocument.body.addEventListener('htmx:afterSwap', function (event) {\n\t\t// After HTMX swaps the content, find the new message container and scroll it down.\n\t\tconst messagesContainer = document.getElementById(\"messages-container\");\n\t\tif (messagesContainer) {\n\t\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t\t}\n\n\t\t// Also, find the new input and focus it for a seamless experience.\n\t\tconst messageInput = document.querySelector('input[name=\"message\"]');\n\t\tif (messageInput) {\n\t\t\tmessageInput.focus();\n\t\t}\n\t});\n</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

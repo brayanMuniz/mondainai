@@ -12,15 +12,14 @@ templ ChatInterface(sessionId string, messages llm.MessageHistory) {
 		<form
 			id="chat-form"
 			hx-post={ "/character/chat/" + sessionId }
-			hx-target="#messages-container"
-			hx-swap="beforeend"
-			hx-on::after-request="this.reset()"
+			hx-target="#papa-div"
+			hx-swap="outerHTML"
 			class="flex-shrink-0 flex"
 		>
 			<input
 				type="text"
 				name="message"
-				class="flex-grow border rounded-l-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+				class="flex-grow border rounded-l-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
 				placeholder="ラーメン..."
 				autocomplete="off"
 				autofocus
@@ -33,11 +32,6 @@ templ ChatInterface(sessionId string, messages llm.MessageHistory) {
 			</button>
 		</form>
 	</div>
-}
-
-templ ChatTurn(userMessage string, modelResponse llm.LLMResponse) {
-	@messageBubble(llm.Message{UserText: &userMessage, Role: "user"})
-	@messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"})
 }
 
 templ ModelResponseBubble(modelResponse llm.LLMResponse) {
@@ -54,7 +48,7 @@ templ messageBubble(message llm.Message) {
 	}
 	if message.Role == "model" && message.ModelResponse != nil {
 		<div class="flex justify-start my-2">
-			<div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-lg shadow">
+			<div class="bg-gray-50 text-gray-800 rounded-lg p-3 max-w-lg shadow">
 				<p>{ message.ModelResponse.Message }</p>
 			</div>
 		</div>
