@@ -29,7 +29,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Mondainai</title><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js\"></script><script>\n\t\tdocument.addEventListener(\"DOMContentLoaded\", function () {\n\t\t\tdocument.body.addEventListener(\"htmx:responseError\", function (evt) {\n\t\t\t\tconsole.error(\"HTMX Response Erorr: \", evt.detail)\n\t\t\t})\n\t\t})\n\t</script></head><body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>MondaiNAI</title><script src=\"https://cdn.tailwindcss.com\"></script><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body class=\"bg-slate-900\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +37,7 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- The script has been MOVED here, so it only loads once --><script>\n\t\t// This flag ensures we only attach listeners once, just in case.\n\t\tif (!window.htmxListenersAttached) {\n\t\t\tdocument.body.addEventListener('htmx:beforeRequest', function (evt) {\n\t\t\t\tif (evt.detail.elt.id !== 'chat-form') return;\n\n\t\t\t\tconst form = evt.detail.elt;\n\t\t\t\tconst messageInput = form.querySelector('input[name=\"message\"]');\n\t\t\t\tif (!messageInput) return;\n\t\t\t\tconst messageText = messageInput.value;\n\n\t\t\t\tif (!messageText.trim()) {\n\t\t\t\t\tevt.preventDefault();\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\tconst template = document.getElementById('user-message-template');\n\t\t\t\tif (!template) return;\n\t\t\t\tconst clone = template.content.cloneNode(true);\n\n\t\t\t\tclone.querySelector('.message-text').textContent = messageText;\n\n\t\t\t\tconst messagesContainer = document.getElementById('messages-container');\n\t\t\t\tif (!messagesContainer) return;\n\t\t\t\tmessagesContainer.appendChild(clone);\n\t\t\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t\t\t});\n\n\t\t\tdocument.body.addEventListener('htmx:afterSwap', function (event) {\n\t\t\t\tconst messagesContainer = document.getElementById(\"messages-container\");\n\t\t\t\tif (messagesContainer) {\n\t\t\t\t\tmessagesContainer.scrollTop = messagesContainer.scrollHeight;\n\t\t\t\t}\n\t\t\t\tconst messageInput = document.querySelector('input[name=\"message\"]');\n\t\t\t\tif (messageInput) {\n\t\t\t\t\tmessageInput.focus();\n\t\t\t\t}\n\t\t\t});\n\n\t\t\twindow.htmxListenersAttached = true;\n\t\t}\n\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

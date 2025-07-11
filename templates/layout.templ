@@ -6,19 +6,54 @@ templ Base() {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Mondainai</title>
+			<title>MondaiNAI</title>
 			<script src="https://cdn.tailwindcss.com"></script>
-			<script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
-			<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			document.body.addEventListener("htmx:responseError", function (evt) {
-				console.error("HTMX Response Erorr: ", evt.detail)
-			})
-		})
-	</script>
+			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 		</head>
-		<body>
+		<body class="bg-slate-900">
 			{ children... }
+			<script>
+		// This flag ensures we only attach listeners once, just in case.
+		if (!window.htmxListenersAttached) {
+			document.body.addEventListener('htmx:beforeRequest', function (evt) {
+				if (evt.detail.elt.id !== 'chat-form') return;
+
+				const form = evt.detail.elt;
+				const messageInput = form.querySelector('input[name="message"]');
+				if (!messageInput) return;
+				const messageText = messageInput.value;
+
+				if (!messageText.trim()) {
+					evt.preventDefault();
+					return;
+				}
+
+				const template = document.getElementById('user-message-template');
+				if (!template) return;
+				const clone = template.content.cloneNode(true);
+
+				clone.querySelector('.message-text').textContent = messageText;
+
+				const messagesContainer = document.getElementById('messages-container');
+				if (!messagesContainer) return;
+				messagesContainer.appendChild(clone);
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			});
+
+			document.body.addEventListener('htmx:afterSwap', function (event) {
+				const messagesContainer = document.getElementById("messages-container");
+				if (messagesContainer) {
+					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				}
+				const messageInput = document.querySelector('input[name="message"]');
+				if (messageInput) {
+					messageInput.focus();
+				}
+			});
+
+			window.htmxListenersAttached = true;
+		}
+	</script>
 		</body>
 	</html>
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/brayanMuniz/mondainai/internal/llm"
 	"google.golang.org/genai"
 )
@@ -134,6 +136,7 @@ func (p *GeminiProvider) NewSessionFromMessages(ctx context.Context, systemPromp
 }
 
 func (s *GeminiChatSession) SendMessage(ctx context.Context, userMessage string) (*llm.LLMResponse, error) {
+	log.Println("LLM is sending a message")
 	res, err := s.chat.SendMessage(ctx, genai.Part{Text: userMessage})
 	if err != nil {
 		return nil, err
@@ -203,7 +206,7 @@ func newGameplayConfig(systemPrompt string, recallList []string) *genai.Generate
 				"message": {Type: genai.TypeString},
 				"emotion_picture": {
 					Type: genai.TypeString,
-					Enum: []string{"happy", "neutral", "sad", "embarrased", "shy"},
+					Enum: llm.GetEmotionList(),
 				},
 				"happy_score": {
 					Type:    genai.TypeInteger,

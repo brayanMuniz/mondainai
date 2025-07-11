@@ -7,83 +7,64 @@ import (
 
 templ GameUI(g *game.Game) {
 	@Base() {
-		<div id="papa-div" class="bg-slate-900 text-white">
-			<div class="flex h-screen">
+		<div id="papa-div" class="font-sans">
+			<!-- Template for optimistic UI update -->
+			<template id="user-message-template">
+				<div class="flex justify-end my-2">
+					<div class="bg-blue-500 text-white rounded-xl p-3 max-w-md shadow-md">
+						<p class="message-text"></p>
+					</div>
+				</div>
+			</template>
+			<div class="flex h-screen bg-[#1e293b]">
 				<!-- Left Sidebar -->
-				<div class="w-[25%] bg-slate-800 p-6 flex flex-col space-y-4">
-					<div
-						id="emotion-pic"
-						class="bg-slate-700/50 rounded-lg aspect-square flex flex-col items-center justify-center p-4"
-					>
-						<p class="text-lg font-semibold text-slate-300 mb-2">Emotion</p>
-						<p class="text-4xl">{ g.CurrentCharacterEmotion.String() }</p>
+				<div class="w-[22%] bg-[#1e293b] p-6 flex flex-col space-y-5">
+					<div class="bg-[#293548] rounded-lg p-6 flex-grow flex flex-col items-center justify-center">
+						<p class="text-slate-400 text-sm">Emotion</p>
+						<p class="text-white text-4xl font-bold mt-2">{ g.CurrentCharacterEmotion.String() }</p>
 					</div>
-					<div
-						id="happy-score"
-						class="bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center"
-					>
-						<p class="text-md font-semibold text-slate-300">Happy Score</p>
-						<p class="text-2xl font-bold">{ fmt.Sprintf("%d", g.HappyScore) }</p>
+					<div class="bg-[#293548] rounded-lg p-5 text-center">
+						<p class="text-slate-400 text-sm">Happy Score</p>
+						<p class="text-white text-2xl font-bold">{ fmt.Sprintf("%d", g.HappyScore) }</p>
 					</div>
-					<div
-						id="timer"
-						class="bg-slate-700/50 rounded-lg h-24 flex flex-col items-center justify-center"
-					>
-						<p class="text-md font-semibold text-slate-300">Timer</p>
-						<p class="text-3xl font-mono">{ fmt.Sprintf("%d", g.AllowedTime) }</p>
+					<div class="bg-[#293548] rounded-lg p-5 text-center">
+						<p class="text-slate-400 text-sm">Timer</p>
+						<p class="text-white text-2xl font-bold">{ fmt.Sprintf("%d", g.AllowedTime) }</p>
 					</div>
-					<div id="yen" class="bg-slate-700/50 rounded-lg h-20 flex flex-col items-center justify-center">
-						<p class="text-md font-semibold text-slate-300">Yen</p>
-						<p class="text-2xl font-bold">{ fmt.Sprintf("¥%d", g.CurrentYen) }</p>
+					<div class="bg-[#293548] rounded-lg p-5 text-center">
+						<p class="text-slate-400 text-sm">Yen</p>
+						<p class="text-white text-2xl font-bold">{ fmt.Sprintf("¥%d", g.CurrentYen) }</p>
 					</div>
-					<div class="flex-grow"></div>
 				</div>
 				<!-- Center Chat Area -->
-				<div class="w-[50%] flex flex-col bg-slate-200 text-black p-4">
+				<div class="w-[56%] flex flex-col bg-[#eef2f9] p-4">
 					@ChatInterface(g.SessionId, g.MessageHistory)
 				</div>
 				<!-- Right Sidebar -->
-				<div class="w-[25%] bg-slate-800 p-6">
-					<div class="bg-slate-700/50 rounded-lg h-full flex flex-col p-4 space-y-4">
-						<h2 class="text-xl font-bold text-center text-slate-200">Game Helper</h2>
+				<div class="w-[22%] bg-[#1e293b] p-6">
+					<div class="bg-[#293548] rounded-lg h-full p-6">
+						<h2 class="text-white font-bold text-lg mb-4">Game Helper</h2>
+						<h3 class="text-slate-300 font-semibold mb-2">Recalled Facts</h3>
+						<ul class="list-disc list-inside space-y-1 text-slate-400">
+							if len(g.UserRecalledTheseFacts) == 0 {
+								<li>No facts recalled yet.</li>
+							} else {
+								for fact, _ := range g.UserRecalledTheseFacts {
+									<li>{ fact }</li>
+								}
+							}
+						</ul>
 						if g.IsCurrentRecallOppurtunity && g.CurrentRecallHint != "" {
-							<div class="bg-yellow-900/50 border border-yellow-600 rounded-lg p-3">
-								<p class="text-yellow-300 font-semibold">Recall Opportunity!</p>
-								<p class="text-yellow-400 italic">
+							<div class="mt-6 bg-sky-900/50 border border-sky-700 rounded-lg p-3">
+								<p class="text-sky-300 font-semibold">Recall Opportunity!</p>
+								<p class="text-sky-400 italic">
 									"{ g.CurrentRecallHint }"
 								</p>
 							</div>
 						}
-						<div>
-							<h3 class="text-lg font-semibold text-slate-300 mb-2">Recalled Facts</h3>
-							<ul class="list-disc list-inside space-y-1 text-slate-400">
-								if len(g.UserRecalledTheseFacts) == 0 {
-									<li>No facts recalled yet.</li>
-								} else {
-									for fact, _ := range g.UserRecalledTheseFacts {
-										<li>{ fact }</li>
-									}
-								}
-							</ul>
-						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<script>
-	document.body.addEventListener('htmx:afterSwap', function (event) {
-		// After HTMX swaps the content, find the new message container and scroll it down.
-		const messagesContainer = document.getElementById("messages-container");
-		if (messagesContainer) {
-			messagesContainer.scrollTop = messagesContainer.scrollHeight;
-		}
-
-		// find the new input and focus it 
-		const messageInput = document.querySelector('input[name="message"]');
-		if (messageInput) {
-			messageInput.focus();
-		}
-	});
-</script>
 	}
 }

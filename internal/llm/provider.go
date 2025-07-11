@@ -61,6 +61,10 @@ func (e Emotion) String() string {
 		return "Happy"
 	case Sad:
 		return "Sad"
+	case Embarrassed:
+		return "Embarrassed"
+	case Shy:
+		return "Shy"
 	default:
 		return "Unknown"
 	}

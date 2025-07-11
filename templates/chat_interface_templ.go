@@ -31,7 +31,7 @@ func ChatInterface(sessionId string, messages llm.MessageHistory) templ.Componen
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"chat-container\" class=\"flex flex-col h-full\"><div id=\"messages-container\" class=\"flex-grow overflow-y-auto mb-4 px-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"chat-container\" class=\"flex flex-col h-full\"><div id=\"messages-container\" class=\"flex-grow overflow-y-auto p-4 space-y-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -54,36 +54,7 @@ func ChatInterface(sessionId string, messages llm.MessageHistory) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\" class=\"flex-shrink-0 flex\"><input type=\"text\" name=\"message\" class=\"flex-grow border rounded-l-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black\" placeholder=\"ラーメン...\" autocomplete=\"off\" autofocus> <button type=\"submit\" class=\"bg-blue-500 text-white px-6 py-3 rounded-r-lg hover:bg-blue-600 transition-colors\">Send</button></form></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func ModelResponseBubble(modelResponse llm.LLMResponse) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = messageBubble(llm.Message{ModelResponse: &modelResponse, Role: "model"}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\" data-hx-on-htmx-after-request=\"this.reset()\" class=\"flex-shrink-0 p-2\"><div class=\"flex\"><input type=\"text\" name=\"message\" class=\"flex-grow bg-white border border-slate-300 rounded-l-lg p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500\" placeholder=\"ラーメン...\" autocomplete=\"off\" autofocus> <button type=\"submit\" class=\"bg-blue-500 text-white font-semibold px-6 py-3 rounded-r-lg hover:bg-blue-600 transition-colors\">Send</button></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,22 +78,22 @@ func messageBubble(message llm.Message) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if message.Role == "user" && message.UserText != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-lg p-3 max-w-lg shadow\"><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-xl p-3 max-w-md shadow-md\"><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(*message.UserText)
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(*message.UserText)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/chat_interface.templ`, Line: 45, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/chat_interface.templ`, Line: 44, Col: 26}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -132,16 +103,16 @@ func messageBubble(message llm.Message) templ.Component {
 			}
 		}
 		if message.Role == "model" && message.ModelResponse != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex justify-start my-2\"><div class=\"bg-gray-50 text-gray-800 rounded-lg p-3 max-w-lg shadow\"><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex justify-start my-2\"><div class=\"bg-white text-slate-800 rounded-xl p-3 max-w-md shadow-md\"><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(message.ModelResponse.Message)
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(message.ModelResponse.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/chat_interface.templ`, Line: 52, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/chat_interface.templ`, Line: 51, Col: 38}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

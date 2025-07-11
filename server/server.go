@@ -202,7 +202,8 @@ func (s *Server) sendMessage(c echo.Context) error {
 			"Could not process message",
 		)
 	}
-	log.Printf("Session %s - Game State After Turn:\n%+v", sessionId, gameSession)
+
+	log.Println("Processed the turn")
 
 	// Re-render the entire GameUI with the updated session state.
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
