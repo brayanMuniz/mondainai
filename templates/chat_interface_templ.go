@@ -54,7 +54,7 @@ func ChatInterface(sessionId string, messages llm.MessageHistory) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\" data-hx-on-htmx-after-request=\"this.reset()\" class=\"flex-shrink-0 p-2\"><div class=\"flex\"><input type=\"text\" name=\"message\" class=\"flex-grow bg-white border border-slate-300 rounded-l-lg p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500\" placeholder=\"ラーメン...\" autocomplete=\"off\" autofocus> <button type=\"submit\" class=\"bg-blue-500 text-white font-semibold px-6 py-3 rounded-r-lg hover:bg-blue-600 transition-colors\">Send</button></div></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-target=\"#papa-div\" hx-swap=\"outerHTML\" data-hx-on-htmx-after-request=\"this.reset()\" class=\"flex-shrink-0 p-2\"><div class=\"flex\"><input type=\"text\" name=\"message\" class=\"flex-grow bg-white border border-pink-300 rounded-l-lg p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-400\" placeholder=\"ラーメン...\" autocomplete=\"off\" autofocus> <button type=\"submit\" class=\"bg-pink-500 text-white font-semibold px-6 py-3 rounded-r-lg hover:bg-pink-600 transition-colors\">Send</button></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -84,7 +84,7 @@ func messageBubble(message llm.Message) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if message.Role == "user" && message.UserText != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-xl p-3 max-w-md shadow-md\"><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex justify-end my-2\"><div class=\"bg-pink-500 text-white rounded-xl p-3 max-w-md shadow-md\"><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -103,7 +103,7 @@ func messageBubble(message llm.Message) templ.Component {
 			}
 		}
 		if message.Role == "model" && message.ModelResponse != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex justify-start my-2\"><div class=\"bg-white text-slate-800 rounded-xl p-3 max-w-md shadow-md\"><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex justify-start my-2\"><div class=\"bg-pink-100 text-pink-700 rounded-xl p-3 max-w-md shadow-md\"><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

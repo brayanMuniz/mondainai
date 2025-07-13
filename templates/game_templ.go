@@ -46,59 +46,59 @@ func GameUI(g *game.Game) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"font-sans\"><!-- Template for optimistic UI update --><template id=\"user-message-template\"><div class=\"flex justify-end my-2\"><div class=\"bg-blue-500 text-white rounded-xl p-3 max-w-md shadow-md\"><p class=\"message-text\"></p></div></div></template><div class=\"flex h-screen bg-[#1e293b]\"><!-- Left Sidebar --><div class=\"w-[22%] bg-[#1e293b] p-6 flex flex-col space-y-5\"><div class=\"bg-[#293548] rounded-lg p-6 flex-grow flex flex-col items-center justify-center\"><p class=\"text-slate-400 text-sm\">Emotion</p><p class=\"text-white text-4xl font-bold mt-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"papa-div\" class=\"font-sans\"><!-- Template for optimistic UI update --><template id=\"user-message-template\"><div class=\"flex justify-end my-2\"><div class=\"bg-pink-500 text-white rounded-xl p-3 max-w-md shadow-md\"><p class=\"message-text\"></p></div></div></template><div class=\"flex h-screen bg-gray-50\"><!-- Left Sidebar --><div class=\"w-[22%] bg-white p-6 flex flex-col space-y-5 border-r border-gray-200\"><div class=\"bg-pink-50 rounded-lg p-6 flex-grow flex flex-col items-center justify-center border border-pink-100\"><p class=\"text-pink-500 text-sm\">Emotion</p><p class=\"text-pink-700 text-4xl font-bold mt-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(g.CurrentCharacterEmotion.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 24, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 24, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><div class=\"bg-[#293548] rounded-lg p-5 text-center\"><p class=\"text-slate-400 text-sm\">Happy Score</p><p class=\"text-white text-2xl font-bold\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><div class=\"bg-pink-50 rounded-lg p-5 text-center border border-pink-100\"><p class=\"text-pink-500 text-sm\">Happy Score</p><p class=\"text-pink-700 text-2xl font-bold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", g.HappyScore))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 28, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 28, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p></div><div class=\"bg-[#293548] rounded-lg p-5 text-center\"><p class=\"text-slate-400 text-sm\">Timer</p><p class=\"text-white text-2xl font-bold\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p></div><div class=\"bg-pink-50 rounded-lg p-5 text-center border border-pink-100\"><p class=\"text-pink-500 text-sm\">Timer</p><p class=\"text-pink-700 text-2xl font-bold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", g.AllowedTime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 32, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 32, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"bg-[#293548] rounded-lg p-5 text-center\"><p class=\"text-slate-400 text-sm\">Yen</p><p class=\"text-white text-2xl font-bold\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"bg-pink-50 rounded-lg p-5 text-center border border-pink-100\"><p class=\"text-pink-500 text-sm\">Yen</p><p class=\"text-pink-700 text-2xl font-bold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("¥%d", g.CurrentYen))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 36, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/game.templ`, Line: 36, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div></div><!-- Center Chat Area --><div class=\"w-[56%] flex flex-col bg-[#eef2f9] p-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div></div><!-- Center Chat Area --><div class=\"w-[56%] flex flex-col bg-white p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -106,7 +106,7 @@ func GameUI(g *game.Game) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Right Sidebar --><div class=\"w-[22%] bg-[#1e293b] p-6\"><div class=\"bg-[#293548] rounded-lg h-full p-6\"><h2 class=\"text-white font-bold text-lg mb-4\">Game Helper</h2><h3 class=\"text-slate-300 font-semibold mb-2\">Recalled Facts</h3><ul class=\"list-disc list-inside space-y-1 text-slate-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Right Sidebar --><div class=\"w-[22%] bg-white p-6 border-l border-gray-200\"><div class=\"bg-pink-50 rounded-lg h-full p-6 border border-pink-100\"><h2 class=\"text-pink-700 font-bold text-lg mb-4\">Game Helper</h2><h3 class=\"text-pink-500 font-semibold mb-2\">Recalled Facts</h3><ul class=\"list-disc list-inside space-y-1 text-pink-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -141,7 +141,7 @@ func GameUI(g *game.Game) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if g.IsCurrentRecallOppurtunity && g.CurrentRecallHint != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"mt-6 bg-sky-900/50 border border-sky-700 rounded-lg p-3\"><p class=\"text-sky-300 font-semibold\">Recall Opportunity!</p><p class=\"text-sky-400 italic\">\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"mt-6 bg-pink-100 border border-pink-300 rounded-lg p-3\"><p class=\"text-pink-700 font-semibold\">Recall Opportunity!</p><p class=\"text-pink-600 italic\">\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
